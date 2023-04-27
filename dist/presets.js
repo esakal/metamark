@@ -11,29 +11,33 @@ import callouts from 'remark-callouts';
 import rehypeExternalLinks from "rehype-external-links";
 export const presetBuilder = ({ toLink }) => {
     return {
-        plugins: [
-            remarkParse,
-            callouts,
-            remarkGfm,
-            [remarkObsidianLink, { toLink }],
-            remarkRehype,
-            [rehypeExternalLinks, { rel: ['nofollow'], target: '_blank' }],
-            rehypeSlug,
-            [rehypeAutolinkHeadings, { behavior: 'wrap' }],
-            [rehypeHighlight, { languages: { elixir } }],
-            rehypeStringify,
-        ],
+        preset: {
+            plugins: [
+                remarkParse,
+                callouts,
+                remarkGfm,
+                [remarkObsidianLink, { toLink }],
+                remarkRehype,
+                [rehypeExternalLinks, { rel: ['nofollow'], target: '_blank' }],
+                rehypeSlug,
+                [rehypeAutolinkHeadings, { behavior: 'wrap' }],
+                [rehypeHighlight, { languages: { elixir } }],
+                rehypeStringify,
+            ],
+        },
+        presetManifest: {
+            plugins: [
+                'remark-parse',
+                'remark-callouts',
+                'remark-gfm',
+                'remark-obsidian-link',
+                'remark-rehype',
+                'rehype-external-links',
+                'rehype-slug',
+                'rehype-autolink-headings',
+                'rehype-highlight',
+                'rehype-stringify'
+            ]
+        }
     };
-};
-export const preset = {
-    plugins: [
-        remarkParse,
-        remarkGfm,
-        remarkObsidianLink,
-        remarkRehype,
-        rehypeSlug,
-        [rehypeAutolinkHeadings, { behavior: 'wrap' }],
-        [rehypeHighlight, { languages: { elixir } }],
-        rehypeStringify,
-    ],
 };

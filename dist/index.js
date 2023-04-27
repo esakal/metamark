@@ -8,7 +8,7 @@ import remarkParse from 'remark-parse';
 import { unified } from 'unified';
 import { getSlug } from './getSlug.js';
 import { getTocData } from './getTocData.js';
-import { preset, presetBuilder } from './presets.js';
+import { presetBuilder } from './presets.js';
 import { toLinkBuilder } from './toLinkBuilder.js';
 function getFrontmatter(rawMd) {
     const { data: frontmatter } = matter(rawMd);
@@ -52,8 +52,9 @@ function getMark(filePath, pageAllowSet, options) {
     const md = getMdNoFrontmatter(rawMd);
     const frontmatter = getFrontmatter(rawMd);
     const getPageUri = (_b = (_a = options === null || options === void 0 ? void 0 : options.getPageUriBuilder) === null || _a === void 0 ? void 0 : _a.call(options, { frontmatter })) !== null && _b !== void 0 ? _b : undefined;
-    const preset = presetBuilder({ toLink: toLinkBuilder(pageAllowSet, getPageUri) });
-    const html = toHtml(md, preset);
+    const { preset, presetManifest } = presetBuilder({ toLink: toLinkBuilder(pageAllowSet, getPageUri) });
+    const resolvedPreset = options === null || options === void 0 ? void 0 : options.modifyPreset(preset, presetManifest);
+    const html = toHtml(md, resolvedPreset);
     return {
         page,
         slug: getSlug(page),
@@ -84,7 +85,6 @@ export const Metamark = {
     getSlug,
     getPage,
     getTocData,
-    preset,
     presetBuilder,
     toHtml,
     toText,

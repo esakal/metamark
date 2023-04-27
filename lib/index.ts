@@ -5,10 +5,10 @@ import path from 'path'
 import remarkGfm from 'remark-gfm'
 import { remarkObsidianLink } from 'remark-obsidian-link'
 import remarkParse from 'remark-parse'
-import { Preset, unified } from 'unified'
+import {PluggableList, Preset, unified} from 'unified'
 import { getSlug } from './getSlug.js'
 import { getTocData, MetamarkTocItem } from './getTocData.js'
-import { preset, presetBuilder } from './presets.js'
+import { presetBuilder } from './presets.js'
 import {GetPageUriBuilder, toLinkBuilder} from './toLinkBuilder.js'
 
 function getFrontmatter(rawMd: string): { [key: string]: any } {
@@ -58,7 +58,8 @@ function getMdNoFrontmatter(rawMd: string): string {
 }
 
 export interface  GetMarksOptions {
-  getPageUriBuilder?: GetPageUriBuilder
+  getPageUriBuilder?: GetPageUriBuilder,
+  modifyPreset?: (preset: Preset, presetManifest: { plugins: string[] }) => Preset
 }
 
 export interface Mark {
@@ -77,8 +78,9 @@ function getMark(filePath: string, pageAllowSet: Set<string>, options?: GetMarks
   const md = getMdNoFrontmatter(rawMd)
   const frontmatter = getFrontmatter(rawMd);
   const getPageUri = options?.getPageUriBuilder?.({ frontmatter }) ?? undefined;
-  const preset = presetBuilder({ toLink: toLinkBuilder(pageAllowSet, getPageUri) })
-  const html = toHtml(md, preset)
+  const {preset, presetManifest} = presetBuilder({ toLink: toLinkBuilder(pageAllowSet, getPageUri) })
+  const resolvedPreset = options?.modifyPreset(preset, presetManifest)
+  const html = toHtml(md, resolvedPreset)
 
   return {
     page,
@@ -114,7 +116,6 @@ export const Metamark = {
   getSlug,
   getPage,
   getTocData,
-  preset,
   presetBuilder,
   toHtml,
   toText,

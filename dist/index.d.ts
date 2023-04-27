@@ -13,6 +13,9 @@ declare function getRawMd(filePath: string): string;
 declare function getMdNoFrontmatter(rawMd: string): string;
 export interface GetMarksOptions {
     getPageUriBuilder?: GetPageUriBuilder;
+    modifyPreset?: (preset: Preset, presetManifest: {
+        plugins: string[];
+    }) => Preset;
 }
 export interface Mark {
     page: string;
@@ -37,10 +40,14 @@ export declare const Metamark: {
     getSlug: typeof getSlug;
     getPage: typeof getPage;
     getTocData: typeof getTocData;
-    preset: Preset;
     presetBuilder: ({ toLink }: {
         toLink: any;
-    }) => Preset;
+    }) => {
+        preset: Preset;
+        presetManifest: {
+            plugins: string[];
+        };
+    };
     toHtml: typeof toHtml;
     toText: typeof toText;
 };
